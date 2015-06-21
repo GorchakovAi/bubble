@@ -6,9 +6,11 @@
     <meta name="csrf-token" content="{{ csrf_token() }}" />
 
     <link href='//fonts.googleapis.com/css?family=Lato:100' rel='stylesheet' type='text/css'>
-    <!-- Latest compiled and minified CSS & JS -->
-    <link rel="stylesheet" media="screen" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
-    <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+
+
+    <link href="{{ asset('/css/bootstrap.min.css') }}" rel="stylesheet">
+
+    <script type="text/javascript" src="{{ asset('/js/jquery-latest.min.js') }}"></script>
 
 </head>
 <body>
@@ -56,7 +58,7 @@
                             {!! Form::text('url_img',null,array('class' => 'form-control','id'=>'ac_h1')) !!}
 
                             {!! Form::label('description', 'Описание')!!}
-                            {!! Form::textarea('description',null,array('class' => 'form-control', 'rows'=>'12','id'=>'ac_h2')) !!}
+                            {!! Form::textarea('description',null,array('class' => 'form-control', 'rows'=>'13','id'=>'ac_h2')) !!}
 
 
                         </div>
@@ -142,33 +144,68 @@
                         </p>
                     </div>
                 </div>
+                <hr>
                 <div class="row">
-                    <div class="col-md-12">
+                    <div class="col-md-12" >
                         <h2>Каталог</h2>
-
-                        <div class="col-md-2">
-                            <div class="btn-group-vertical" id="cat_container"></div>
-                        </div>
-
-                        <div class="col-md-9">
-                            <div class="col-md-3">
-                                <div class="thumbnail">
-                                    <img data-src="holder.js/300x200" alt="...">
-                                    <div class="caption">
-                                        <h3>Ярлык эскиза</h3>
-                                        <p>...</p>
-                                        <p><a href="#" class="btn btn-primary" role="button">Кнопка</a> <a href="#" class="btn btn-default" role="button">Кнопка</a></p>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
+                        <div class="btn-group-vertical col-md-3" id="cat_container"></div>
+                        <div class="col-md-9" id="catalog_row"> </div>
                     </div>
                 </div>
+<hr>
+                <div class="row">
+                    <div class="col-md-12" >
+                        <h2>Галерея</h2>
+                        <div class="col-md-3" id="add_pic">
+                            <h3>Добавить картинку</h3>
+                            <p>
+                                {!! Form::open(array('action' => 'AdminController@postUpdateFinishedDesign')) !!}
+                            <div class="form-group">
+                                {!! Form::label('title', 'Название')!!}
+                                {!! Form::text('title',null,array('class' => 'form-control')) !!}
+
+                                {!! Form::label('url_img', 'Картинка')!!}
+                                {!! Form::text('url_img',null,array('class' => 'form-control')) !!}
+
+                                {!! Form::label('description', 'Описание')!!}
+                                {!! Form::textarea('description',null,array('class' => 'form-control', 'rows'=>'9')) !!}
+
+
+                            </div>
+                            {!! Form::submit('Добавить',array('class' => 'form-control'))!!}
+                            {!! Form::close() !!}
+                            </p>
+                        </div>
+                        <div class="col-md-9" id="galerey_container"></div>
+                    </div>
                 </div>
+                <hr>
+                <div class="row">
+                    <div class="col-md-12" >
+                        <h2>Партнеры</h2>
+                        <div class="col-md-3">
+                            <h3>Добавить партнера</h3>
+                            <p>
+                                {!! Form::open(array('action' => 'AdminController@postUpdateFinishedDesign')) !!}
+                            <div class="form-group">
+                                {!! Form::label('title', 'Название')!!}
+                                {!! Form::text('title',null,array('class' => 'form-control')) !!}
+
+                                {!! Form::label('url_img', 'Картинка')!!}
+                                {!! Form::text('url_img',null,array('class' => 'form-control')) !!}
+
+                                {!! Form::label('description', 'Описание')!!}
+                                {!! Form::textarea('description',null,array('class' => 'form-control', 'rows'=>'9')) !!}
 
 
-
+                            </div>
+                            {!! Form::submit('Добавить',array('class' => 'form-control'))!!}
+                            {!! Form::close() !!}
+                            </p>
+                        </div>
+                        <div class="col-md-9" id="partner_container"></div>
+                    </div>
+                </div>
             </div>
 
         </div>
@@ -180,60 +217,156 @@
                 var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
                 var z = 1;
                 var cat_container = $("#cat_container");
-
-
-
+        $.ajax({
+            type: "POST",
+            url: "{{ action('AdminController@postPartners') }}",
+            data: {_token: CSRF_TOKEN},
+            dataType: 'JSON',
+            success: function (data) {
+                $.each(data, function(i, item) {
+                    var caption = $("<div>", {
+                        "class": "caption",
+                        html: "<h4>"+item['title']+"</h4>"
+                    });
+                    $("<span>", {
+                        "class":"glyphicon glyphicon-edit"
+                    }).appendTo(caption);
+                    $("<span>", {
+                        "class":"glyphicon glyphicon-remove-sign"
+                    }).appendTo(caption);
+                    var thumbnail = $("<div>", {
+                        "class": "thumbnail",
+                        html: "<img src='"+item['url_img']+"'>"
+                    });
+                    var nail = $("<div>", {
+                        "class": "col-md-2"
+                    });
+                    nail.append(thumbnail.append(caption)).appendTo("#partner_container");
+                });
+            }
+        });
+        $.ajax({
+            type: "POST",
+            url: "{{ action('AdminController@postGallery') }}",
+            data: {_token: CSRF_TOKEN},
+            dataType: 'JSON',
+            success: function (data) {
+                $.each(data, function(i, item) {
+                    var caption = $("<div>", {
+                        "class": "caption",
+                        html: "<h4>"+item['title']+"</h4>"
+                    });
+                    $("<span>", {
+                        "class":"glyphicon glyphicon-edit"
+                    }).appendTo(caption);
+                    $("<span>", {
+                        "class":"glyphicon glyphicon-remove-sign"
+                    }).appendTo(caption);
+                    var thumbnail = $("<div>", {
+                        "class": "thumbnail",
+                        html: "<img src='"+item['url_img']+"'>"
+                    });
+                    var nail = $("<div>", {
+                        "class": "col-md-2"
+                    });
+                    nail.append(thumbnail.append(caption)).appendTo("#galerey_container");
+                });
+            }
+        });
         $.ajax({
             type: "POST",
             url: "{{ action('AdminController@postListFinishedDesign') }}",
             data: {_token: CSRF_TOKEN},
             dataType: 'JSON',
             success: function (data) {
-
                 $("<button>", {
                     "class": "btn btn-default",
-                    text: "Все",
+                    text: "Все товары",
                     click: function(){
-
+                        $.ajax({
+                            type: "POST",
+                            url: "{{ action('AdminController@postCatalogDesign') }}",
+                            data: {_token: CSRF_TOKEN},
+                            dataType: 'JSON',
+                            success: function (data) {
+                                $.each(data, function(i, item) {
+                                    var caption = $("<div>", {
+                                        "class": "caption",
+                                        html: "<h4>"+item['title']+"</h4>"
+                                    });
+                                    $("<span>", {
+                                        "class":"glyphicon glyphicon-edit"
+                                    }).appendTo(caption);
+                                    $("<span>", {
+                                        "class":"glyphicon glyphicon-remove-sign"
+                                    }).appendTo(caption);
+                                    var thumbnail = $("<div>", {
+                                        "class": "thumbnail",
+                                        html: "<img src='"+item['url_img']+"'>"
+                                    });
+                                    var nail = $("<div>", {
+                                        "class": "col-md-2"
+                                    });
+                                    nail.append(thumbnail.append(caption)).appendTo("#catalog_row");
+                                });
+                            }
+                        });
                     }
                 }).appendTo(cat_container);
-
                 $.each(data, function(i, item) {
-                    $("#fd_h"+z).attr("value", item);
-
+                    $("#fd_h"+z).attr("value", item['title']);
                     $("<button>", {
                             "class": "btn btn-default",
-                            text: item,
+                            text: item['title'],
                             click: function(){
-
+                                $.ajax({
+                                    type: "POST",
+                                    url: "{{ action('AdminController@postCatalogs') }}"+"/"+item['id'],
+                                    data: {_token: CSRF_TOKEN},
+                                    dataType: 'JSON',
+                                    success: function (data) {
+                                        $("#catalog_row").empty();
+                                        $.each(data, function(i, item) {
+                                            var caption = $("<div>", {
+                                                "class": "caption",
+                                                html: "<h4>"+item['title']+"</h4>"
+                                            });
+                                            $("<span>", {
+                                                "class":"glyphicon glyphicon-edit"
+                                            }).appendTo(caption);
+                                            $("<span>", {
+                                                "class":"glyphicon glyphicon-remove-sign"
+                                            }).appendTo(caption);
+                                            var thumbnail = $("<div>", {
+                                                "class": "thumbnail",
+                                                html: "<img src='"+item['url_img']+"'>"
+                                            });
+                                            var nail = $("<div>", {
+                                                "class": "col-md-2"
+                                            });
+                                            nail.append(thumbnail.append(caption)).appendTo("#catalog_row");
+                                        });
+                                    }});
                             }
                         }).appendTo(cat_container);
-
                     z++;
                 });
-
             }
         });
-
         $.ajax({
             type: "POST",
             url: "{{ action('AdminController@postListPageInfo') }}",
             data: {_token: CSRF_TOKEN},
             dataType: 'JSON',
             success: function (data) {
-
                 $("#pi_h1").attr("value", data['url_logo']);
                 $("#pi_h2").attr("value", data['url_video']);
                 $("#pi_h3").attr("value", data['url_vk']);
                 $("#pi_h4").attr("value", data['url_fb']);
                 $("#pi_h5").attr("value", data['url_twitter']);
                 $("#pi_h6").attr("value", data['url_gp']);
-
-
-
             }
         });
-
         $.ajax({
             type: "POST",
             url: "{{ action('AdminController@postCatalogDesign') }}",
@@ -241,35 +374,37 @@
             dataType: 'JSON',
             success: function (data) {
                 $.each(data, function(i, item) {
-
-
-
                     var caption = $("<div>", {
                             "class": "caption",
-                            text: item
-                        })
-
-                    z++;
+                            html: "<h4>"+item['title']+"</h4>"
+                        });
+                    $("<span>", {
+                        "class":"glyphicon glyphicon-edit"
+                    }).appendTo(caption);
+                    $("<span>", {
+                        "class":"glyphicon glyphicon-remove-sign"
+                    }).appendTo(caption);
+                    var thumbnail = $("<div>", {
+                        "class": "thumbnail",
+                        html: "<img src='"+item['url_img']+"'>"
+                    });
+                    var nail = $("<div>", {
+                        "class": "col-md-2"
+                    });
+                    nail.append(thumbnail.append(caption)).appendTo("#catalog_row");
                 });
-
             }
         });
-
         $.ajax({
             type: "POST",
             url: "{{ action('AdminController@postAboutCompany') }}",
             data: {_token: CSRF_TOKEN},
             dataType: 'JSON',
             success: function (data) {
-
                 $("#ac_h1").attr("value", data['url_img']);
                 $("#ac_h2").html(data['description']);
-
             }
         });
-
-
-
     });
 </script>
 </body>

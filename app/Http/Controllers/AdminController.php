@@ -10,6 +10,8 @@ use App\FinishedDesign;
 use App\PageInfo;
 use App\AboutCompany;
 use App\CatalogDesign;
+use App\Gallery;
+use App\Partners;
 
 use App\Http\Requests\UpdateFinishedDesignRequest;
 
@@ -33,15 +35,22 @@ class AdminController extends Controller
         return "123";
     }
 
+
     public function postUpdateAboutCompany()
     {
         return "123";
     }
 
+    public function postAboutCompany(){
+        return AboutCompany::title();
+    }
+
+
     public function postUpdateDiscount()
     {
         return "123";
     }
+
 
     public function postUpdateFinishedDesign(UpdateFinishedDesignRequest $request)
     {
@@ -56,6 +65,7 @@ class AdminController extends Controller
         return redirect()->action('AdminController@getIndex');
     }
 
+
     public function postListFinishedDesign(){
         return FinishedDesign::title();
     }
@@ -64,12 +74,18 @@ class AdminController extends Controller
         return PageInfo::title();
     }
 
-    public function postAboutCompany(){
-        return AboutCompany::title();
-    }
 
     public function postCatalogDesign(){
         return CatalogDesign::select('catalog_id','title','url_img','description')->get();
+    }
+    public function postCatalogs($id){
+        return FinishedDesign::find($id)->catalog();
+    }
+    public function postGallery(){
+        return Gallery::select('title','url_img')->get();
+    }
+    public function postPartners(){
+        return Partners::select('title','url_img')->get();
     }
 
 
