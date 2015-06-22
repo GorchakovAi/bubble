@@ -13,8 +13,17 @@ use App\CatalogDesign;
 use App\Gallery;
 use App\Partners;
 
+use App\Http\Requests\AddPartnersRequest;
 use App\Http\Requests\UpdateFinishedDesignRequest;
+use App\Http\Requests\AddPictureRequest;
+use App\Http\Requests\AddDesignRequest;
+use App\Http\Requests\UploadImgRequest;
+use App\Http\Requests\UpdatePageInfoRequest;
+use App\Http\Requests\UpdateAboutCompanyRequest;
 
+use Symfony\Component\Console\Input;
+
+use Faker\Provider\Image;
 use Illuminate\Support\Facades\DB;
 
 
@@ -30,15 +39,27 @@ class AdminController extends Controller
         return view('admin');
     }
 
-    public function postUpdatePageInfo()
+    public function postUpdatePageInfo(UpdatePageInfoRequest $request)
     {
-        return "123";
+        PageInfo::where('id', '=', 1)->update([
+            'url_vk'        =>$request['url_vk'],
+            'url_fb'        =>$request['url_fb'],
+            'url_twitter'   =>$request['url_twitter'],
+            'url_gp'        =>$request['url_gp']]);
+
+        return redirect()->action('AdminController@getIndex');
     }
 
 
-    public function postUpdateAboutCompany()
+    public function postUpdateAboutCompany(UpdateAboutCompanyRequest $request)
     {
-        return "123";
+        $request->file('url_img')->move(public_path('media/img/'), 'about.png');
+
+        AboutCompany::where('id', '=', 1)->update([
+            'url_img'        =>$request['url_img'],
+            'description'        =>$request['description']
+        ]);
+        return redirect()->action('AdminController@getIndex');
     }
 
     public function postAboutCompany(){
@@ -74,7 +95,6 @@ class AdminController extends Controller
         return PageInfo::title();
     }
 
-
     public function postCatalogDesign(){
         return CatalogDesign::select('catalog_id','title','url_img','description')->get();
     }
@@ -84,10 +104,44 @@ class AdminController extends Controller
     public function postGallery(){
         return Gallery::select('title','url_img')->get();
     }
+
+
     public function postPartners(){
         return Partners::select('title','url_img')->get();
     }
 
+    public function postAddPicture(AddPictureRequest $request){
+        Gallery::create(['title' => $request['title'],'url_img' => $request['url_img'],'description'=>$request['description']]);
+        return redirect()->action('AdminController@getIndex');
+    }
+
+    public function postAddPDesign(AddDesignRequest $request){
+
+        $name = uniqid().".jpg";
+        $request->file('url_img')->move(public_path('media/img/catalog/'), $name);
+
+        CatalogDesign::create([
+            'title' => $request['title'],
+            'url_img' => $name,
+            'description'=>$request['description'],
+            'catalog_id'=>$request['catalog_id']
+        ]);
+        return redirect()->action('AdminController@getIndex');
+    }
+
+    public function postAddPartners(AddPartnersRequest $request){
+        Partners::create(['title' => $request['title'],'url_img' => $request['url_img']]);
+        return redirect()->action('AdminController@getIndex');
+    }
+
+    public function postUploadHead(UploadImgRequest $request){
+
+        if(null !==$request->file('url_logo')){
+        $request->file('url_logo')->move(public_path('media/img'), 'logo.png');}
+
+        return redirect()->action('AdminController@getIndex');
+
+    }
 
 
 

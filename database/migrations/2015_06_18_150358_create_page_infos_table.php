@@ -14,8 +14,6 @@ class CreatePageInfosTable extends Migration
     {
         Schema::create('page_infos', function (Blueprint $table) {
             $table->increments('id');
-            $table->text('url_logo');
-            $table->text('url_video');
             $table->text('url_vk');
             $table->text('url_fb');
             $table->text('url_twitter');
