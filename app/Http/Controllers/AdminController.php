@@ -56,7 +56,7 @@ class AdminController extends Controller
         $request->file('url_img')->move(public_path('media/img/'), 'about.png');
 
         AboutCompany::where('id', '=', 1)->update([
-            'url_img'        =>$request['url_img'],
+            'url_img'        =>'about.png',
             'description'        =>$request['description']
         ]);
         return redirect()->action('AdminController@getIndex');
@@ -96,7 +96,7 @@ class AdminController extends Controller
     }
 
     public function postCatalogDesign(){
-        return CatalogDesign::select('catalog_id','title','url_img','description')->get();
+        return CatalogDesign::select('id','catalog_id','title','url_img','description')->get();
     }
     public function postCatalogs($id){
         return FinishedDesign::find($id)->catalog();

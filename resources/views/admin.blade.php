@@ -12,9 +12,12 @@
 
     <script type="text/javascript" src="{{ asset('/js/jquery-latest.min.js') }}"></script>
     <script type="text/javascript" src="{{ asset('/js/bootstrap.file-input.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('/js/bootstrap.js') }}"></script>
+
 
 </head>
 <body>
+
 <div class="row">
     <div class="col-md-10 col-md-offset-1">
         <div class="panel panel-default">
@@ -223,8 +226,18 @@
                 var z = 1;
                 var cat_container = $("#cat_container");
                 $('input[type=file]').bootstrapFileInput();
+                postCatalogDesign();
 
-
+        $.ajax({
+            type: "POST",
+            url: "{{ action('AdminController@postAboutCompany') }}",
+            data: {_token: CSRF_TOKEN},
+            dataType: 'JSON',
+            success: function (data) {
+                    console.log(data['description'])
+                    $("#ac_h2").html(data['description']);
+            }
+        });
 
         $.ajax({
             type: "POST",
@@ -276,7 +289,7 @@
                         html: "<img src='"+item['url_img']+"'>"
                     });
                     var nail = $("<div>", {
-                        "class": "col-md-2"
+                        "class": "col-md-3"
                     });
                     nail.append(thumbnail.append(caption)).appendTo("#galerey_container");
                 });
@@ -291,41 +304,16 @@
                 $("<button>", {
                     "class": "btn btn-default",
                     text: "Все товары",
-                    click: function(){
-                        $.ajax({
-                            type: "POST",
-                            url: "{{ action('AdminController@postCatalogDesign') }}",
-                            data: {_token: CSRF_TOKEN},
-                            dataType: 'JSON',
-                            success: function (data) {
-                                $("#catalog_row").empty();
-                                $.each(data, function(i, item) {
-                                    var caption = $("<div>", {
-                                        "class": "caption",
-                                        html: "<h4>"+item['title']+"</h4>"
-                                    });
-                                    $("<span>", {
-                                        "class":"glyphicon glyphicon-edit"
-                                    }).appendTo(caption);
-                                    $("<span>", {
-                                        "class":"glyphicon glyphicon-remove-sign"
-                                    }).appendTo(caption);
-                                    var thumbnail = $("<div>", {
-                                        "class": "thumbnail",
-                                        html: "<img src='{{asset('media/img/catalog/')}}/"+item['url_img']+"'>"
-                                    });
-                                    var nail = $("<div>", {
-                                        "class": "col-md-2"
-                                    });
-                                    nail.append(thumbnail.append(caption)).appendTo("#catalog_row");
-                                });
-                            }
-                        });
-                    }
+                    click: postCatalogDesign
                 }).appendTo(cat_container);
                 $.each(data, function(i, item) {
 
                     $('#catalog_id').append($('<option>', {
+                        value: item['id'],
+                        text: item['title']
+                    }));
+
+                    $('#up_catalog_id').append($('<option>', {
                         value: item['id'],
                         text: item['title']
                     }));
@@ -342,26 +330,8 @@
                                     dataType: 'JSON',
                                     success: function (data) {
                                         $("#catalog_row").empty();
-                                        $.each(data, function(i, item) {
-                                            var caption = $("<div>", {
-                                                "class": "caption",
-                                                html: "<h4>"+item['title']+"</h4>"
-                                            });
-                                            $("<span>", {
-                                                "class":"glyphicon glyphicon-edit"
-                                            }).appendTo(caption);
-                                            $("<span>", {
-                                                "class":"glyphicon glyphicon-remove-sign"
-                                            }).appendTo(caption);
-                                            var thumbnail = $("<div>", {
-                                                "class": "thumbnail",
-                                                html: "<img src='{{asset('media/img/catalog/')}}/"+item['url_img']+"'>"
-                                            });
-                                            var nail = $("<div>", {
-                                                "class": "col-md-2"
-                                            });
-                                            nail.append(thumbnail.append(caption)).appendTo("#catalog_row");
-                                        });
+
+
                                     }});
                             }
                         }).appendTo(cat_container);
@@ -381,45 +351,138 @@
                 $("#pi_h4").attr("value", data['url_gp']);
             }
         });
-        $.ajax({
-            type: "POST",
-            url: "{{ action('AdminController@postCatalogDesign') }}",
-            data: {_token: CSRF_TOKEN},
-            dataType: 'JSON',
-            success: function (data) {
-                $.each(data, function(i, item) {
-                    var caption = $("<div>", {
-                            "class": "caption",
-                            html: "<h4>"+item['title']+"</h4>"
+
+        function postCatalogDesign(){
+            $("#catalog_row").empty();
+                $.ajax({
+                    type: "POST",
+                    url: "{{ action('AdminController@postCatalogDesign') }}",
+                    data: {_token: CSRF_TOKEN},
+                    dataType: 'JSON',
+                    success: function (data) {
+                        $.each(data, function(i, item) {
+                            var caption = $("<div>", {
+                                "class": "caption",
+                                html: "<h4>"+item['title']+"</h4>"
+                            });
+                            var button_edit = $("<button>",{
+                                "type":"button",
+                                "class":"btn btn-default btn-sm",
+                                "data-target":"#catalog_edit",
+                                "data-toggle":"modal",
+                                click:function(){
+                                    var up_catalog_id = "#up_catalog_id [value='"+item['catalog_id']+"']";
+                                    $('#up_d_title').attr("value",item['title']);
+                                    $(up_catalog_id).attr("selected", "selected");
+                                    $('#up_description_id').val(item['description']);
+
+                                    $('#up_catalog_img')
+                                            .attr("src","{{asset('media/img/catalog/')}}/"+item['url_img'])
+                                            .attr("style","width: 100%")
+                                            .addClass('img-rounded');
+                                }
+                            });
+                            var button_remove = $("<button>",{
+                                "type":"button",
+                                "class":"btn btn-default btn-sm",
+                                "data-target":"#catalog_remove",
+                                "data-toggle":"modal",
+                                click:function(){
+                                    $("#catalog_remove_b").html("Точно удалить '"+item['title']+"' ?");
+                                }
+                            });
+                            $("<span>", {"class":"glyphicon glyphicon-edit"}).appendTo(button_edit);
+                            $("<span>", {"class":"glyphicon glyphicon-remove-sign"}).appendTo(button_remove);
+                            button_edit.appendTo(caption);
+                            button_remove.appendTo(caption);
+                            var thumbnail = $("<div>", {
+                                "class": "thumbnail",
+                                html: "<img src='{{asset('media/img/catalog/')}}/"+item['url_img']+"'>"
+                            });
+                            var nail = $("<div>", {
+                                "class": "col-md-3"
+                            });
+                            nail.append(thumbnail.append(caption)).appendTo("#catalog_row");
                         });
-                    $("<span>", {
-                        "class":"glyphicon glyphicon-edit"
-                    }).appendTo(caption);
-                    $("<span>", {
-                        "class":"glyphicon glyphicon-remove-sign"
-                    }).appendTo(caption);
-                    var thumbnail = $("<div>", {
-                        "class": "thumbnail",
-                        html: "<img src='{{asset('media/img/catalog/')}}/"+item['url_img']+"'>"
-                    });
-                    var nail = $("<div>", {
-                        "class": "col-md-2"
-                    });
-                    nail.append(thumbnail.append(caption)).appendTo("#catalog_row");
+                    }
                 });
-            }
-        });
-        $.ajax({
-            type: "POST",
-            url: "{{ action('AdminController@postAboutCompany') }}",
-            data: {_token: CSRF_TOKEN},
-            dataType: 'JSON',
-            success: function (data) {
-                $("#ac_h1").attr("value", data['url_img']);
-                $("#ac_h2").html(data['description']);
-            }
-        });
+        }
+
+
     });
 </script>
+</div>
+
+
+<!-- Modal Remove -->
+<div class="modal fade" id="catalog_remove" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Улалить</h4>
+            </div>
+            <div class="modal-body" id="catalog_remove_b">
+
+            </div>
+            <div class="modal-footer">
+                {!! Form::open(array('action' => 'AdminController@postAddPDesign', 'files' => true)) !!}
+
+                {!! Form::submit('Удалить',array('class' => 'btn btn-default'))!!}
+                {!! Form::close() !!}
+
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<!-- Modal Edit-->
+<div class="modal fade" id="catalog_edit" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Изменить карточку товара</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+
+                    <br>
+                    {!! Form::open(array('action' => 'AdminController@postAddPDesign', 'files' => true)) !!}
+                <div class="form-group">
+                    <img id="up_catalog_img">
+                    {!! Form::file('up_url_img',array('title' => 'Выбрать картинку')) !!}<br>
+
+                    {!! Form::label('title', 'Название')!!}
+                    {!! Form::text('title',null,array('class' => 'form-control','id'=>'up_d_title')) !!}
+
+
+                    {!! Form::label('up_catalog_id', 'Каталог')!!}
+                    {!! Form::select('up_catalog_id', array(),null,array('class' => 'form-control','id'=>'up_catalog_id')) !!}
+
+                    {!! Form::label('description', 'Описание')!!}
+                    {!! Form::textarea('description',null,array('class' => 'form-control', 'rows'=>'9','id'=>'up_description_id')) !!}
+
+
+                </div>
+                {!! Form::submit('Обновить',array('class' => 'form-control'))!!}
+                {!! Form::close() !!}
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
 </body>
 </html>
