@@ -27,7 +27,8 @@ class AddDesignRequest extends Request
             'title'         =>'min:2',
             'url_img'       =>'image',
             'description'   =>'min:2',
-            'catalog_id'    =>'integer'
+            'catalog_id'    =>'integer',
+            'id'            =>'integer'
         ];
     }
 }

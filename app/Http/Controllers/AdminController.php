@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
@@ -38,7 +37,6 @@ class AdminController extends Controller
     {
         return view('admin');
     }
-
     public function postUpdatePageInfo(UpdatePageInfoRequest $request)
     {
         PageInfo::where('id', '=', 1)->update([
@@ -46,33 +44,24 @@ class AdminController extends Controller
             'url_fb'        =>$request['url_fb'],
             'url_twitter'   =>$request['url_twitter'],
             'url_gp'        =>$request['url_gp']]);
-
         return redirect()->action('AdminController@getIndex');
     }
-
-
     public function postUpdateAboutCompany(UpdateAboutCompanyRequest $request)
     {
         $request->file('url_img')->move(public_path('media/img/'), 'about.png');
-
         AboutCompany::where('id', '=', 1)->update([
             'url_img'        =>'about.png',
             'description'        =>$request['description']
         ]);
         return redirect()->action('AdminController@getIndex');
     }
-
     public function postAboutCompany(){
         return AboutCompany::title();
     }
-
-
     public function postUpdateDiscount()
     {
         return "123";
     }
-
-
     public function postUpdateFinishedDesign(UpdateFinishedDesignRequest $request)
     {
         FinishedDesign::where('id', '=', 1)->update(['title' => $request['h1']]);
@@ -82,19 +71,14 @@ class AdminController extends Controller
         FinishedDesign::where('id', '=', 5)->update(['title' => $request['h5']]);
         FinishedDesign::where('id', '=', 6)->update(['title' => $request['h6']]);
         FinishedDesign::where('id', '=', 7)->update(['title' => $request['h7']]);
-
         return redirect()->action('AdminController@getIndex');
     }
-
-
     public function postListFinishedDesign(){
         return FinishedDesign::title();
     }
-
     public function postListPageInfo(){
         return PageInfo::title();
     }
-
     public function postCatalogDesign(){
         return CatalogDesign::select('id','catalog_id','title','url_img','description')->get();
     }
@@ -104,22 +88,16 @@ class AdminController extends Controller
     public function postGallery(){
         return Gallery::select('title','url_img')->get();
     }
-
-
     public function postPartners(){
         return Partners::select('title','url_img')->get();
     }
-
     public function postAddPicture(AddPictureRequest $request){
         Gallery::create(['title' => $request['title'],'url_img' => $request['url_img'],'description'=>$request['description']]);
         return redirect()->action('AdminController@getIndex');
     }
-
     public function postAddPDesign(AddDesignRequest $request){
-
         $name = uniqid().".jpg";
         $request->file('url_img')->move(public_path('media/img/catalog/'), $name);
-
         CatalogDesign::create([
             'title' => $request['title'],
             'url_img' => $name,
@@ -128,84 +106,29 @@ class AdminController extends Controller
         ]);
         return redirect()->action('AdminController@getIndex');
     }
-
     public function postAddPartners(AddPartnersRequest $request){
         Partners::create(['title' => $request['title'],'url_img' => $request['url_img']]);
         return redirect()->action('AdminController@getIndex');
     }
-
     public function postUploadHead(UploadImgRequest $request){
-
         if(null !==$request->file('url_logo')){
         $request->file('url_logo')->move(public_path('media/img'), 'logo.png');}
-
         return redirect()->action('AdminController@getIndex');
-
     }
-
-
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return Response
-     */
-    public function create()
-    {
-        //
+    public function postUpdateCardProduct(AddDesignRequest $request){
+        CatalogDesign::where('id', '=', $request['id'])->update(['title' => $request['title']]);
+        CatalogDesign::where('id', '=', $request['id'])->update(['catalog_id' => $request['catalog_id']]);
+        CatalogDesign::where('id', '=', $request['id'])->update(['description' => $request['description']]);
+        if(null !==$request->file('url_img')) {
+            $name = uniqid() . ".jpg";
+            $request->file('url_img')->move(public_path('media/img/catalog/'), $name);
+            CatalogDesign::where('id', '=', $request['id'])->update(['url_img' => $name]);
+        }
+        return redirect()->action('AdminController@getIndex');
     }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @return Response
-     */
-    public function store()
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  int  $id
-     * @return Response
-     */
-    public function update($id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return Response
-     */
-    public function destroy($id)
-    {
-        //
+    public function postRemoveCardProduct(AddDesignRequest $request){
+        var_dump($request["id"]);
+        CatalogDesign::find($request["id"])->delete();
+        return redirect()->action('AdminController@getIndex');
     }
 }

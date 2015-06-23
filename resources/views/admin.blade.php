@@ -21,7 +21,7 @@
 <div class="row">
     <div class="col-md-10 col-md-offset-1">
         <div class="panel panel-default">
-            <div class="panel-heading"><h1>Редактор сайта</h1><img height="200" src="{{ asset('/media/img/logo.png') }}"></div>
+            <div class="panel-heading"><h1>Редактор сайта</h1></div>
 
             <div class="panel-body">
 
@@ -227,7 +227,7 @@
                 var cat_container = $("#cat_container");
                 $('input[type=file]').bootstrapFileInput();
                 postCatalogDesign();
-
+        //Загрузка страницы
         $.ajax({
             type: "POST",
             url: "{{ action('AdminController@postAboutCompany') }}",
@@ -237,7 +237,6 @@
                     $("#ac_h2").html(data['description']);
             }
         });
-
         $.ajax({
             type: "POST",
             url: "{{ action('AdminController@postPartners') }}",
@@ -306,17 +305,14 @@
                     click: postCatalogDesign
                 }).appendTo(cat_container);
                 $.each(data, function(i, item) {
-
                     $('#catalog_id').append($('<option>', {
                         value: item['id'],
                         text: item['title']
                     }));
-
                     $('#up_catalog_id').append($('<option>', {
                         value: item['id'],
                         text: item['title']
                     }));
-
                     $("#fd_h"+z).attr("value", item['title']);
                     $("<button>", {
                             "class": "btn btn-default",
@@ -344,7 +340,8 @@
                                                     $('#up_d_title').attr("value",item['title']);
                                                     $(up_catalog_id).attr("selected", "selected");
                                                     $('#up_description_id').val(item['description']);
-
+                                                    $('#ph_id').val(item['id']);
+                                                    $('#phr_id').val(item['id']);
                                                     $('#up_catalog_img')
                                                             .attr("src","{{asset('media/img/catalog/')}}/"+item['url_img'])
                                                             .attr("style","width: 100%")
@@ -357,6 +354,7 @@
                                                 "data-target":"#catalog_remove",
                                                 "data-toggle":"modal",
                                                 click:function(){
+                                                    $('#phr_id').val(item['id']);
                                                     $("#catalog_remove_b").html("Точно удалить '"+item['title']+"' ?");
                                                 }
                                             });
@@ -392,7 +390,6 @@
                 $("#pi_h4").attr("value", data['url_gp']);
             }
         });
-
         function postCatalogDesign(){
             $("#catalog_row").empty();
                 $.ajax({
@@ -416,7 +413,7 @@
                                     $('#up_d_title').attr("value",item['title']);
                                     $(up_catalog_id).attr("selected", "selected");
                                     $('#up_description_id').val(item['description']);
-
+                                    $('#ph_id').val(item['id']);
                                     $('#up_catalog_img')
                                             .attr("src","{{asset('media/img/catalog/')}}/"+item['url_img'])
                                             .attr("style","width: 100%")
@@ -429,6 +426,7 @@
                                 "data-target":"#catalog_remove",
                                 "data-toggle":"modal",
                                 click:function(){
+                                    $('#phr_id').val(item['id']);
                                     $("#catalog_remove_b").html("Точно удалить '"+item['title']+"' ?");
                                 }
                             });
@@ -449,39 +447,29 @@
                 });
         }
 
-
     });
 </script>
 </div>
-
-
 <!-- Modal Remove -->
 <div class="modal fade" id="catalog_remove" role="dialog">
     <div class="modal-dialog">
-
         <!-- Modal content-->
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                 <h4 class="modal-title">Улалить</h4>
             </div>
-            <div class="modal-body" id="catalog_remove_b">
-
-            </div>
+            <div class="modal-body" id="catalog_remove_b"></div>
             <div class="modal-footer">
-                {!! Form::open(array('action' => 'AdminController@postAddPDesign', 'files' => true)) !!}
+                {!! Form::open(array('action' => 'AdminController@postRemoveCardProduct')) !!}
+                {!! Form::hidden('id',null,array('id'=>'phr_id')) !!}
 
                 {!! Form::submit('Удалить',array('class' => 'btn btn-default'))!!}
                 {!! Form::close() !!}
-
-
             </div>
         </div>
-
     </div>
 </div>
-
-
 <!-- Modal Edit-->
 <div class="modal fade" id="catalog_edit" role="dialog">
     <div class="modal-dialog">
@@ -493,37 +481,30 @@
                 <h4 class="modal-title">Изменить карточку товара</h4>
             </div>
             <div class="modal-body">
-                <p>
-
-                    <br>
-                    {!! Form::open(array('action' => 'AdminController@postAddPDesign', 'files' => true)) !!}
+                    {!! Form::open(array('action' => 'AdminController@postUpdateCardProduct', 'files' => true)) !!}
                 <div class="form-group">
-                    <img id="up_catalog_img">
-                    {!! Form::file('up_url_img',array('title' => 'Выбрать картинку')) !!}<br>
+                    {{--<img id="up_catalog_img">--}}
+                    {!! Form::hidden('id',null,array('id'=>'ph_id')) !!}
+                    {!! Form::file('url_img',array('title' => 'Выбрать картинку')) !!}<br>
 
                     {!! Form::label('title', 'Название')!!}
                     {!! Form::text('title',null,array('class' => 'form-control','id'=>'up_d_title')) !!}
 
 
-                    {!! Form::label('up_catalog_id', 'Каталог')!!}
-                    {!! Form::select('up_catalog_id', array(),null,array('class' => 'form-control','id'=>'up_catalog_id')) !!}
+                    {!! Form::label('catalog_id', 'Каталог')!!}
+                    {!! Form::select('catalog_id', array(),null,array('class' => 'form-control','id'=>'up_catalog_id')) !!}
 
                     {!! Form::label('description', 'Описание')!!}
                     {!! Form::textarea('description',null,array('class' => 'form-control', 'rows'=>'9','id'=>'up_description_id')) !!}
-
-
                 </div>
                 {!! Form::submit('Обновить',array('class' => 'form-control'))!!}
                 {!! Form::close() !!}
-                </p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
             </div>
         </div>
-
     </div>
 </div>
-
 </body>
 </html>
