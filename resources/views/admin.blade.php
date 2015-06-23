@@ -234,7 +234,6 @@
             data: {_token: CSRF_TOKEN},
             dataType: 'JSON',
             success: function (data) {
-                    console.log(data['description'])
                     $("#ac_h2").html(data['description']);
             }
         });
@@ -289,7 +288,7 @@
                         html: "<img src='"+item['url_img']+"'>"
                     });
                     var nail = $("<div>", {
-                        "class": "col-md-3"
+                        "class": "col-md-2"
                     });
                     nail.append(thumbnail.append(caption)).appendTo("#galerey_container");
                 });
@@ -330,8 +329,50 @@
                                     dataType: 'JSON',
                                     success: function (data) {
                                         $("#catalog_row").empty();
+                                        $.each(data, function(i, item) {
+                                            var caption = $("<div>", {
+                                                "class": "caption",
+                                                html: "<h4>"+item['title']+"</h4>"
+                                            });
+                                            var button_edit = $("<button>",{
+                                                "type":"button",
+                                                "class":"btn btn-default btn-sm",
+                                                "data-target":"#catalog_edit",
+                                                "data-toggle":"modal",
+                                                click:function(){
+                                                    var up_catalog_id = "#up_catalog_id [value='"+item['catalog_id']+"']";
+                                                    $('#up_d_title').attr("value",item['title']);
+                                                    $(up_catalog_id).attr("selected", "selected");
+                                                    $('#up_description_id').val(item['description']);
 
-
+                                                    $('#up_catalog_img')
+                                                            .attr("src","{{asset('media/img/catalog/')}}/"+item['url_img'])
+                                                            .attr("style","width: 100%")
+                                                            .addClass('img-rounded');
+                                                }
+                                            });
+                                            var button_remove = $("<button>",{
+                                                "type":"button",
+                                                "class":"btn btn-default btn-sm",
+                                                "data-target":"#catalog_remove",
+                                                "data-toggle":"modal",
+                                                click:function(){
+                                                    $("#catalog_remove_b").html("Точно удалить '"+item['title']+"' ?");
+                                                }
+                                            });
+                                            $("<span>", {"class":"glyphicon glyphicon-edit"}).appendTo(button_edit);
+                                            $("<span>", {"class":"glyphicon glyphicon-remove-sign"}).appendTo(button_remove);
+                                            button_edit.appendTo(caption);
+                                            button_remove.appendTo(caption);
+                                            var thumbnail = $("<div>", {
+                                                "class": "thumbnail",
+                                                html: "<img src='{{asset('media/img/catalog/')}}/"+item['url_img']+"'>"
+                                            });
+                                            var nail = $("<div>", {
+                                                "class": "col-md-3"
+                                            });
+                                            nail.append(thumbnail.append(caption)).appendTo("#catalog_row");
+                                        });
                                     }});
                             }
                         }).appendTo(cat_container);

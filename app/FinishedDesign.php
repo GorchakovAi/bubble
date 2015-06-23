@@ -12,7 +12,7 @@ class FinishedDesign extends Model
 
     public function catalog()
     {
-        return $this->hasMany('App\CatalogDesign','catalog_id')->select('catalog_id', 'title','url_img','description')->get();
+        return $this->hasMany('App\CatalogDesign','catalog_id')->select('id','catalog_id', 'title','url_img','description')->get();
     }
 
     public function scopeTitle()
