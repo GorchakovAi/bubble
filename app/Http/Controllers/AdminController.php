@@ -37,6 +37,11 @@ class AdminController extends Controller
     {
         return view('admin');
     }
+
+    // Информация на странице
+    public function postListPageInfo(){
+        return PageInfo::title();
+    }
     public function postUpdatePageInfo(UpdatePageInfoRequest $request)
     {
         PageInfo::where('id', '=', 1)->update([
@@ -46,11 +51,16 @@ class AdminController extends Controller
             'url_gp'        =>$request['url_gp']]);
         return redirect()->action('AdminController@getIndex');
     }
+
+    //О компании
     public function postUpdateAboutCompany(UpdateAboutCompanyRequest $request)
     {
+        if(null !==$request->file('url_img')){
         $request->file('url_img')->move(public_path('media/img/'), 'about.png');
         AboutCompany::where('id', '=', 1)->update([
             'url_img'        =>'about.png',
+        ]);}
+        AboutCompany::where('id', '=', 1)->update([
             'description'        =>$request['description']
         ]);
         return redirect()->action('AdminController@getIndex');
@@ -58,10 +68,14 @@ class AdminController extends Controller
     public function postAboutCompany(){
         return AboutCompany::title();
     }
+
+    // Акции
     public function postUpdateDiscount()
     {
         return "123";
     }
+
+    // Готовые оформления
     public function postUpdateFinishedDesign(UpdateFinishedDesignRequest $request)
     {
         FinishedDesign::where('id', '=', 1)->update(['title' => $request['h1']]);
@@ -76,24 +90,13 @@ class AdminController extends Controller
     public function postListFinishedDesign(){
         return FinishedDesign::title();
     }
-    public function postListPageInfo(){
-        return PageInfo::title();
-    }
-    public function postCatalogDesign(){
-        return CatalogDesign::select('id','catalog_id','title','url_img','description')->get();
-    }
     public function postCatalogs($id){
         return FinishedDesign::find($id)->catalog();
     }
-    public function postGallery(){
-        return Gallery::select('title','url_img')->get();
-    }
-    public function postPartners(){
-        return Partners::select('title','url_img')->get();
-    }
-    public function postAddPicture(AddPictureRequest $request){
-        Gallery::create(['title' => $request['title'],'url_img' => $request['url_img'],'description'=>$request['description']]);
-        return redirect()->action('AdminController@getIndex');
+
+    //Каталог товаров
+    public function postCatalogDesign(){
+        return CatalogDesign::select('id','catalog_id','title','url_img','description')->get();
     }
     public function postAddPDesign(AddDesignRequest $request){
         $name = uniqid().".jpg";
@@ -104,15 +107,6 @@ class AdminController extends Controller
             'description'=>$request['description'],
             'catalog_id'=>$request['catalog_id']
         ]);
-        return redirect()->action('AdminController@getIndex');
-    }
-    public function postAddPartners(AddPartnersRequest $request){
-        Partners::create(['title' => $request['title'],'url_img' => $request['url_img']]);
-        return redirect()->action('AdminController@getIndex');
-    }
-    public function postUploadHead(UploadImgRequest $request){
-        if(null !==$request->file('url_logo')){
-        $request->file('url_logo')->move(public_path('media/img'), 'logo.png');}
         return redirect()->action('AdminController@getIndex');
     }
     public function postUpdateCardProduct(AddDesignRequest $request){
@@ -127,8 +121,70 @@ class AdminController extends Controller
         return redirect()->action('AdminController@getIndex');
     }
     public function postRemoveCardProduct(AddDesignRequest $request){
-        var_dump($request["id"]);
         CatalogDesign::find($request["id"])->delete();
+        return redirect()->action('AdminController@getIndex');
+    }
+    //Галерея
+    public function postGallery(){
+        return Gallery::select('id','title','url_img')->get();
+    }
+    public function postAddPicture(AddPictureRequest $request){
+        if(null !==$request->file('url_img')){
+            $name = uniqid().".jpg";
+            $request->file('url_img')->move(public_path('media/img/gallery/'), $name);
+        }else{
+            $name = "test.jpg";
+        }
+        Gallery::create(['title' => $request['title'],'url_img' => $name]);
+        return redirect()->action('AdminController@getIndex');
+    }
+    public function postRemovePicture(AddPictureRequest $request){
+        Gallery::find($request["id"])->delete();
+        return redirect()->action('AdminController@getIndex');
+    }
+    public function postUpdatePicture(AddPictureRequest $request){
+        if(null !==$request->file('url_img')){
+            $name = uniqid().".jpg";
+            $request->file('url_img')->move(public_path('media/img/gallery/'), $name);
+            Gallery::where('id', '=', $request['id'])->update(['title' => $request['title'],'url_img' => $name]);
+        }else{
+            Gallery::where('id', '=', $request['id'])->update(['title' => $request['title']]);
+        }
+
+        return redirect()->action('AdminController@getIndex');
+    }
+    //Партнеры
+    public function postPartners(){
+        return Partners::select('id','title','url_img')->get();
+    }
+    public function postAddPartners(AddPartnersRequest $request){
+        if(null !==$request->file('url_img')){
+            $name = uniqid().".jpg";
+            $request->file('url_img')->move(public_path('media/img/partners'), $name);
+        }else{
+            $name = 'test.jpg';
+        }
+        Partners::create(['title' => $request['title'],'url_img' => $name]);
+        return redirect()->action('AdminController@getIndex');
+    }
+    public function postEditPartners(AddPartnersRequest $request){
+        if(null !==$request->file('url_img')){
+            $name = uniqid().".jpg";
+            $request->file('url_img')->move(public_path('media/img/partners'), $name);
+        }else{
+            $name = 'test.jpg';
+        }
+        Partners::where('id', '=', $request['id'])->update(['title'=>$request['title'],'url_img' => $name]);
+        return redirect()->action('AdminController@getIndex');
+    }
+    public function postRemovePartners(AddPartnersRequest $request){
+        Partners::find($request["id"])->delete();
+        return redirect()->action('AdminController@getIndex');
+    }
+    //Шапка
+    public function postUploadHead(UploadImgRequest $request){
+        if(null !==$request->file('url_logo')){
+        $request->file('url_logo')->move(public_path('media/img'), 'logo.png');}
         return redirect()->action('AdminController@getIndex');
     }
 }

@@ -25,8 +25,7 @@ class AddPictureRequest extends Request
     {
         return [
             'title'         =>'min:2',
-            'url_img'       =>'min:2',
-            'description'   =>'min:2'
+            'url_img'       =>'min:2'
         ];
     }
 }
