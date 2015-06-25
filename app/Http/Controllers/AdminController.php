@@ -49,7 +49,7 @@ class AdminController extends Controller
             'url_fb'        =>$request['url_fb'],
             'url_twitter'   =>$request['url_twitter'],
             'url_gp'        =>$request['url_gp']]);
-        return redirect()->action('AdminController@getIndex');
+        return "ok";
     }
 
     //О компании
@@ -63,7 +63,7 @@ class AdminController extends Controller
         AboutCompany::where('id', '=', 1)->update([
             'description'        =>$request['description']
         ]);
-        return redirect()->action('AdminController@getIndex');
+        return "ok";
     }
     public function postAboutCompany(){
         return AboutCompany::title();

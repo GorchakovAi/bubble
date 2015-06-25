@@ -10,6 +10,8 @@
     <script type="text/javascript" src="{{ asset('/js/jquery-latest.min.js') }}"></script>
     <script type="text/javascript" src="{{ asset('/js/bootstrap.file-input.js') }}"></script>
     <script type="text/javascript" src="{{ asset('/js/bootstrap.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('/js/jquery.form.min.js') }}"></script>
+
     <style>
         body {
             font-family: Verdana, Arial, Helvetica, sans-serif;
@@ -31,7 +33,7 @@
                     <div class="col-md-4">
                         <h2>Ссылки</h2>
                         <p>
-                            {!! Form::open(array('action' => 'AdminController@postUpdatePageInfo')) !!}
+                            {!! Form::open(array('action' => 'AdminController@postUpdatePageInfo','id'=>'links_form')) !!}
                         <div class="form-group">
                             {!! Form::label('url_vk', 'Ссылка VK.COM')!!}
                             {!! Form::text('url_vk',null,array('class' => 'form-control','id'=>'pi_h1')) !!}
@@ -45,14 +47,14 @@
                             {!! Form::label('url_gp', 'Ссылка Google+')!!}
                             {!! Form::text('url_gp',null,array('class' => 'form-control','id'=>'pi_h4')) !!}
                         </div>
-                        {!! Form::submit('Обновить',array('class' => 'form-control'))!!}
+                        {!! Form::submit('Обновить',array('class' => 'form-control btn-success'))!!}
                         {!! Form::close() !!}
                         </p>
                     </div>
                     <div class="col-md-4">
                         <h2>О Компании</h2>
                         <p>
-                            {!! Form::open(array('action' => 'AdminController@postUpdateAboutCompany', 'files' => true)) !!}
+                            {!! Form::open(array('action' => 'AdminController@postUpdateAboutCompany', 'files' => true, 'id'=>'about_company_form')) !!}
                         <div class="form-group">
 
                             {!! Form::file('url_img',array('title' => 'Выбрать картинку')) !!}<br>
@@ -62,18 +64,18 @@
 
 
                         </div>
-                        {!! Form::submit('Обновить',array('class' => 'form-control'))!!}
+                        {!! Form::submit('Обновить',array('class' => 'form-control btn-success'))!!}
                         {!! Form::close() !!}
                         </p>
                     </div>
                     <div class="col-md-4">
                         <h2>Шапка</h2>
                         <p>
-                            {!! Form::open(array('action' => 'AdminController@postUploadHead', 'files' => true)) !!}
+                            {!! Form::open(array('action' => 'AdminController@postUploadHead', 'files' => true,'id'=>'head_form')) !!}
                         <div class="form-group">
                             {!! Form::file('url_logo',array('title' => 'Выбрать логотип')) !!}
                         </div>
-                        {!! Form::submit('Изменить',array('class' => 'form-control'))!!}
+                        {!! Form::submit('Обновить',array('class' => 'form-control btn-success'))!!}
                         {!! Form::close() !!}
                         </p>
 
@@ -124,7 +126,43 @@
                         <div class="col-md-12" id="partner_container"></div>
                     </div>
                 </div>
+                <!-- Modal Add Catalog -->
+                <div class="modal fade" id="catalog_add_design_name" role="dialog">
+                    <div class="modal-dialog">
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title">Добавить товар</h4>
+                            </div>
+                            <div class="modal-body">
+                                <p>
+                                    {!! Form::open(array('action' => 'AdminController@postAddPDesign', 'files' => 'true','id'=>'add_catalog_form')) !!}
+                                <div class="form-group">
+                                    {!! Form::label('title', 'Название')!!}
+                                    {!! Form::text('title',null,array('class' => 'form-control')) !!}
 
+                                    <br>
+                                    {!! Form::file('url_img',array('title' => 'Выбрать картинку')) !!}<br>
+
+                                    {!! Form::label('catalog_id', 'Каталог')!!}
+                                    {!! Form::select('catalog_id', array(),null,array('class' => 'form-control','id'=>'catalog_id')) !!}
+
+                                    {!! Form::label('description', 'Описание')!!}
+                                    {!! Form::textarea('description',null,array('class' => 'form-control', 'rows'=>'9')) !!}
+
+
+                                </div>
+
+                                </p>
+                            </div>
+                            <div class="modal-footer">
+                                {!! Form::submit('Добавить',array('class' => 'form-control  btn-success'))!!}
+                                {!! Form::close() !!}
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <!-- Modal Remove Catalog -->
                 <div class="modal fade" id="catalog_remove" role="dialog">
                     <div class="modal-dialog">
@@ -136,10 +174,10 @@
                             </div>
                             <div class="modal-body" id="catalog_remove_b"></div>
                             <div class="modal-footer">
-                                {!! Form::open(array('action' => 'AdminController@postRemoveCardProduct')) !!}
+                                {!! Form::open(array('action' => 'AdminController@postRemoveCardProduct','id'=>'remove_catalog_form')) !!}
                                 {!! Form::hidden('id',null,array('id'=>'phr_id')) !!}
 
-                                {!! Form::submit('Удалить',array('class' => 'btn btn-default'))!!}
+                                {!! Form::submit('Удалить',array('class' => 'btn btn-danger'))!!}
                                 {!! Form::close() !!}
                             </div>
                         </div>
@@ -156,7 +194,7 @@
                                 <h4 class="modal-title">Изменить карточку товара</h4>
                             </div>
                             <div class="modal-body">
-                                {!! Form::open(array('action' => 'AdminController@postUpdateCardProduct', 'files' => true)) !!}
+                                {!! Form::open(array('action' => 'AdminController@postUpdateCardProduct', 'files' => true,'id'=>'edit_catalog_form')) !!}
                                 <div class="form-group">
                                     {{--<img id="up_catalog_img">--}}
                                     {!! Form::hidden('id',null,array('id'=>'ph_id')) !!}
@@ -172,7 +210,7 @@
                                     {!! Form::label('description', 'Описание')!!}
                                     {!! Form::textarea('description',null,array('class' => 'form-control', 'rows'=>'9','id'=>'up_description_id')) !!}
                                 </div>
-                                {!! Form::submit('Обновить',array('class' => 'form-control'))!!}
+                                {!! Form::submit('Обновить',array('class' => 'form-control btn-success'))!!}
                                 {!! Form::close() !!}
                             </div>
                             <div class="modal-footer">
@@ -181,6 +219,53 @@
                         </div>
                     </div>
                 </div>
+                <!-- Modal Edit Category-->
+                <div class="modal fade" id="catalog_edit_design_name" role="dialog">
+                    <div class="modal-dialog">
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title">Изменить названия</h4>
+                            </div>
+                            <div class="modal-body">
+                                <p>
+                                    {!! Form::open(array('action' => 'AdminController@postUpdateFinishedDesign','id'=>'edit_category_form')) !!}
+                                <div class="form-group">
+                                    {!! Form::label('h1', 'Заголовок 1')!!}
+                                    {!! Form::text('h1',null,array('class' => 'form-control','id'=>'fd_h1')) !!}
+
+                                    {!! Form::label('h2', 'Заголовок 2')!!}
+                                    {!! Form::text('h2',null,array('class' => 'form-control','id'=>'fd_h2')) !!}
+
+                                    {!! Form::label('h3', 'Заголовок 3')!!}
+                                    {!! Form::text('h3',null,array('class' => 'form-control','id'=>'fd_h3')) !!}
+
+                                    {!! Form::label('h4', 'Заголовок 4')!!}
+                                    {!! Form::text('h4',null,array('class' => 'form-control','id'=>'fd_h4')) !!}
+
+                                    {!! Form::label('h5', 'Заголовок 5')!!}
+                                    {!! Form::text('h5',null,array('class' => 'form-control','id'=>'fd_h5')) !!}
+
+                                    {!! Form::label('h6', 'Заголовок 6')!!}
+                                    {!! Form::text('h6',null,array('class' => 'form-control','id'=>'fd_h6')) !!}
+
+                                    {!! Form::label('h7', 'Заголовок 7')!!}
+                                    {!! Form::text('h7',null,array('class' => 'form-control','id'=>'fd_h7')) !!}
+
+                                </div>
+
+                                </p>
+                            </div>
+                            <div class="modal-footer">
+                                {!! Form::submit('Обновить',array('class' => 'form-control  btn-success'))!!}
+                                {!! Form::close() !!}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
                 <!-- Modal Gallery-->
                 <div class="modal fade" id="gallery_edit" role="dialog">
                     <div class="modal-dialog">
@@ -226,88 +311,6 @@
                                 {!! Form::hidden('id',null,array('id'=>'ghr_id')) !!}
 
                                 {!! Form::submit('Удалить',array('class' => 'btn btn-default'))!!}
-                                {!! Form::close() !!}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Modal Edit Design Name -->
-                <div class="modal fade" id="catalog_edit_design_name" role="dialog">
-                    <div class="modal-dialog">
-                        <!-- Modal content-->
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                <h4 class="modal-title">Изменить названия</h4>
-                            </div>
-                            <div class="modal-body">
-                                <p>
-                                    {!! Form::open(array('action' => 'AdminController@postUpdateFinishedDesign')) !!}
-                                <div class="form-group">
-                                    {!! Form::label('h1', 'Заголовок 1')!!}
-                                    {!! Form::text('h1',null,array('class' => 'form-control','id'=>'fd_h1')) !!}
-
-                                    {!! Form::label('h2', 'Заголовок 2')!!}
-                                    {!! Form::text('h2',null,array('class' => 'form-control','id'=>'fd_h2')) !!}
-
-                                    {!! Form::label('h3', 'Заголовок 3')!!}
-                                    {!! Form::text('h3',null,array('class' => 'form-control','id'=>'fd_h3')) !!}
-
-                                    {!! Form::label('h4', 'Заголовок 4')!!}
-                                    {!! Form::text('h4',null,array('class' => 'form-control','id'=>'fd_h4')) !!}
-
-                                    {!! Form::label('h5', 'Заголовок 5')!!}
-                                    {!! Form::text('h5',null,array('class' => 'form-control','id'=>'fd_h5')) !!}
-
-                                    {!! Form::label('h6', 'Заголовок 6')!!}
-                                    {!! Form::text('h6',null,array('class' => 'form-control','id'=>'fd_h6')) !!}
-
-                                    {!! Form::label('h7', 'Заголовок 7    ')!!}
-                                    {!! Form::text('h7',null,array('class' => 'form-control','id'=>'fd_h7')) !!}
-
-                                </div>
-
-                                </p>
-                            </div>
-                            <div class="modal-footer">
-                                {!! Form::submit('Обновить',array('class' => 'form-control'))!!}
-                                {!! Form::close() !!}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Modal Add Design -->
-                <div class="modal fade" id="catalog_add_design_name" role="dialog">
-                    <div class="modal-dialog">
-                        <!-- Modal content-->
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                <h4 class="modal-title">Добавить товар</h4>
-                            </div>
-                            <div class="modal-body">
-                                <p>
-                                    {!! Form::open(array('action' => 'AdminController@postAddPDesign', 'files' => true)) !!}
-                                <div class="form-group">
-                                    {!! Form::label('title', 'Название')!!}
-                                    {!! Form::text('title',null,array('class' => 'form-control')) !!}
-
-                                    <br>
-                                    {!! Form::file('url_img',array('title' => 'Выбрать картинку')) !!}<br>
-
-                                    {!! Form::label('catalog_id', 'Каталог')!!}
-                                    {!! Form::select('catalog_id', array(),null,array('class' => 'form-control','id'=>'catalog_id')) !!}
-
-                                    {!! Form::label('description', 'Описание')!!}
-                                    {!! Form::textarea('description',null,array('class' => 'form-control', 'rows'=>'9')) !!}
-
-
-                                </div>
-
-                                </p>
-                            </div>
-                            <div class="modal-footer">
-                                {!! Form::submit('Добавить',array('class' => 'form-control'))!!}
                                 {!! Form::close() !!}
                             </div>
                         </div>
@@ -428,12 +431,47 @@
         var z = 1;
         var cat_container = $("#cat_container");
         $('input[type=file]').bootstrapFileInput();
-        postCatalogDesign();
+
         ListPageInfo();
-        ListFinishedDesign();
         AboutCompany();
+        ListFinishedDesign();
         Partners();
         Gallery();
+        postCatalogDesign();
+
+        $('#links_form').ajaxForm(function() {
+            ListPageInfo();
+            alert("Информация обновлена");
+        });
+        $('#about_company_form').ajaxForm(function() {
+            AboutCompany();
+            alert("Информация обновлена");
+        });
+        $('#head_form').ajaxForm(function() {
+            alert("Информация обновлена");
+        });
+        $('#add_catalog_form').ajaxForm(function() {
+            postCatalogDesign();
+            $('#catalog_add_design_name').modal('hide');
+            alert("Информация обновлена");
+        });
+        $('#remove_catalog_form').ajaxForm(function() {
+            postCatalogDesign();
+            $('#catalog_remove').modal('hide');
+            alert("Информация обновлена");
+        });
+        $('#edit_catalog_form').ajaxForm(function() {
+            postCatalogDesign();
+            $('#catalog_edit').modal('hide');
+            alert("Информация обновлена");
+        });
+        $('#edit_category_form').ajaxForm(function() {
+            ListFinishedDesign();
+            $('#catalog_edit_design_name').modal('hide');
+            alert("Информация обновлена");
+        });
+
+
 
         //Загрузка страницы
         function AboutCompany() {
