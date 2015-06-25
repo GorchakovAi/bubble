@@ -114,7 +114,9 @@
                 <div class="row">
                     <div class="col-md-12" >
                         <h2>Галерея <button type="button" data-target="#gallery_add_pic" data-toggle="modal" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-plus"></span></button></h2>
-                        <div class="col-md-12" id="galerey_container"></div>
+                        <div class="col-md-12" id="galerey_container">
+
+                        </div>
                     </div>
                 </div>
                 <hr>
@@ -177,7 +179,7 @@
                                 {!! Form::open(array('action' => 'AdminController@postRemoveCardProduct','id'=>'remove_catalog_form')) !!}
                                 {!! Form::hidden('id',null,array('id'=>'phr_id')) !!}
 
-                                {!! Form::submit('Удалить',array('class' => 'btn btn-danger'))!!}
+                                {!! Form::submit('Удалить',array('class' => 'btn btn-danger form-control'))!!}
                                 {!! Form::close() !!}
                             </div>
                         </div>
@@ -277,7 +279,7 @@
                                 <h4 class="modal-title">Изменить фотографию</h4>
                             </div>
                             <div class="modal-body">
-                                {!! Form::open(array('action' => 'AdminController@postUpdatePicture', 'files' => true)) !!}
+                                {!! Form::open(array('action' => 'AdminController@postUpdatePicture', 'files' => true,'id'=>'edit_gallery')) !!}
                                 <div class="form-group">
                                     {{--<img id="up_catalog_img">--}}
                                     {!! Form::hidden('id',null,array('id'=>'pg_id')) !!}
@@ -307,10 +309,10 @@
                             </div>
                             <div class="modal-body" id="gallery_remove_b"></div>
                             <div class="modal-footer">
-                                {!! Form::open(array('action' => 'AdminController@postRemovePicture')) !!}
+                                {!! Form::open(array('action' => 'AdminController@postRemovePicture','id'=>'remove_gallery')) !!}
                                 {!! Form::hidden('id',null,array('id'=>'ghr_id')) !!}
 
-                                {!! Form::submit('Удалить',array('class' => 'btn btn-default'))!!}
+                                {!! Form::submit('Удалить',array('class' => 'btn btn-danger form-control'))!!}
                                 {!! Form::close() !!}
                             </div>
                         </div>
@@ -328,7 +330,7 @@
                             <div class="modal-body">
                                 <h3>Добавить картинку</h3>
                                 <p>
-                                    {!! Form::open(array('action' => 'AdminController@postAddPicture', 'files' => true)) !!}
+                                    {!! Form::open(array('action' => 'AdminController@postAddPicture', 'files' => true,'id'=>'add_gallery')) !!}
                                 <div class="form-group">
                                     {!! Form::label('title', 'Название')!!}
                                     {!! Form::text('title',null,array('class' => 'form-control')) !!}
@@ -339,12 +341,13 @@
                                 </p>
                             </div>
                             <div class="modal-footer">
-                                {!! Form::submit('Добавить',array('class' => 'form-control'))!!}
+                                {!! Form::submit('Добавить',array('class' => 'form-control btn-success'))!!}
                                 {!! Form::close() !!}
                             </div>
                         </div>
                     </div>
                 </div>
+
                 <!-- Modal Add Partner -->
                 <div class="modal fade" id="partner_add" role="dialog">
                     <div class="modal-dialog">
@@ -356,7 +359,7 @@
                             </div>
                             <div class="modal-body">
                                 <p>
-                                    {!! Form::open(array('action' => 'AdminController@postAddPartners', 'files' => true)) !!}
+                                    {!! Form::open(array('action' => 'AdminController@postAddPartners', 'files' => true,'id'=>'add_partner')) !!}
                                 <div class="form-group">
                                     {!! Form::label('title', 'Название')!!}
                                     {!! Form::text('title',null,array('class' => 'form-control')) !!}
@@ -383,7 +386,7 @@
                             </div>
                             <div class="modal-body">
                                 <p>
-                                    {!! Form::open(array('action' => 'AdminController@postEditPartners', 'files' => true)) !!}
+                                    {!! Form::open(array('action' => 'AdminController@postEditPartners', 'files' => true,'id'=>'edit_partner')) !!}
                                 <div class="form-group">
                                     {!! Form::hidden('id',null,array('id'=>'partner_id')) !!}
                                     {!! Form::label('title', 'Название')!!}
@@ -394,7 +397,7 @@
                                 </p>
                             </div>
                             <div class="modal-footer">
-                                {!! Form::submit('Обновить',array('class' => 'form-control'))!!}
+                                {!! Form::submit('Обновить',array('class' => 'form-control btn-success '))!!}
                                 {!! Form::close() !!}
                             </div>
                         </div>
@@ -411,10 +414,10 @@
                             </div>
                             <div class="modal-body" id="partner_remove_b"></div>
                             <div class="modal-footer">
-                                {!! Form::open(array('action' => 'AdminController@postRemovePartners')) !!}
+                                {!! Form::open(array('action' => 'AdminController@postRemovePartners','id'=>'remove_partner')) !!}
                                 {!! Form::hidden('id',null,array('id'=>'partner_id_r')) !!}
 
-                                {!! Form::submit('Удалить',array('class' => 'btn btn-default'))!!}
+                                {!! Form::submit('Удалить',array('class' => 'btn btn-danger form-control'))!!}
                                 {!! Form::close() !!}
                             </div>
                         </div>
@@ -470,6 +473,37 @@
             $('#catalog_edit_design_name').modal('hide');
             alert("Информация обновлена");
         });
+        $('#edit_gallery').ajaxForm(function() {
+            Gallery();
+            $('#gallery_edit').modal('hide');
+            alert("Информация обновлена");
+        });
+        $('#remove_gallery').ajaxForm(function() {
+            Gallery();
+            $('#gallery_remove').modal('hide');
+            alert("Информация обновлена");
+        });
+        $('#add_gallery').ajaxForm(function() {
+            Gallery();
+            $('#gallery_add_pic').modal('hide');
+            alert("Информация обновлена");
+        });
+        $('#add_partner').ajaxForm(function() {
+            Partners();
+            $('#partner_add').modal('hide');
+            alert("Информация обновлена");
+        });
+        $('#edit_partner').ajaxForm(function() {
+            Partners();
+            $('#partner_edit').modal('hide');
+            alert("Информация обновлена");
+        });
+        $('#remove_partner').ajaxForm(function() {
+            Partners();
+            $('#partner_remove').modal('hide');
+            alert("Информация обновлена");
+        });
+
 
 
 
@@ -492,6 +526,7 @@
                 data: {_token: CSRF_TOKEN},
                 dataType: 'JSON',
                 success: function (data) {
+                    $("#partner_container").empty();
                     $.each(data, function(i, item) {
                         var caption = $("<div>", {
                             "class": "caption",
@@ -541,6 +576,7 @@
                 data: {_token: CSRF_TOKEN},
                 dataType: 'JSON',
                 success: function (data) {
+                    $("#galerey_container").empty();
                     $.each(data, function (i, item) {
                         var caption = $("<div>", {
                             "class": "caption",
@@ -588,6 +624,7 @@
             });
         }
         function ListFinishedDesign() {
+            $('#cat_container').empty();
             $.ajax({
                 type: "POST",
                 url: "{{ action('AdminController@postListFinishedDesign') }}",
