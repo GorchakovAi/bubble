@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Laravel</title>
+    <title>Bubble</title>
 
     <meta name="csrf-token" content="{{ csrf_token() }}" />
 
@@ -9,11 +9,17 @@
 
     <script type="text/javascript" src="{{ asset('/js/jquery-latest.min.js') }}"></script>
     <script type="text/javascript" src="{{ asset('/js/bootstrap.file-input.js') }}"></script>
-    <script type="text/javascript" src="{{ asset('/js/bootstrap.js') }}"></script>
     <script type="text/javascript" src="{{ asset('/js/jquery.form.min.js') }}"></script>
+
+    <script type="text/javascript" src="{{ asset('/bower_components/moment/min/moment.min.js')}}"></script>
+    <script type="text/javascript" src="{{ asset('/bower_components/bootstrap/dist/js/bootstrap.min.js')}}"></script>
+    <script type="text/javascript" src="{{ asset('/bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js')}}"></script>
+    <link rel="stylesheet" href="{{ asset('/bower_components/bootstrap/dist/css/bootstrap.min.css')}}" />
+    <link rel="stylesheet" href="{{ asset('/bower_components/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css')}}" />
 
     <style>
         body {
+            margin-top: 20px;
             font-family: Verdana, Arial, Helvetica, sans-serif;
             font-size: 9pt; /* Размер шрифта в пунктах */
         }
@@ -22,7 +28,6 @@
 
 </head>
 <body>
-
     <div class="col-md-10 col-md-offset-1">
         <div class="panel panel-default">
             <div class="panel-heading"><h1>Редактор сайта</h1></div>
@@ -81,19 +86,25 @@
 
                         <h2>Акции</h2>
                         <p>
-                            {!! Form::open(array('action' => 'AdminController@postUpdatePageInfo')) !!}
+                            {!! Form::open(array('action' => 'AdminController@postUpdateDiscount','id'=>'discount_form')) !!}
                         <div class="form-group">
                             {!! Form::label('h1', 'Первый заголовок')!!}
-                            {!! Form::text('h1',null,array('class' => 'form-control')) !!}
+                            {!! Form::text('h1',null,array('class' => 'form-control','id'=>'dh1')) !!}
 
                             {!! Form::label('h2', 'Второй заголовок')!!}
-                            {!! Form::text('h2',null,array('class' => 'form-control')) !!}
+                            {!! Form::text('h2',null,array('class' => 'form-control','id'=>'dh2')) !!}
 
                             {!! Form::label('DeadLine', 'Срок окончания акции')!!}
-                            {!! Form::text('DeadLine',null,array('class' => 'form-control')) !!}
+
+                                <div class='input-group date' id="cal">
+                                    <input type='text' name='DeadLine' class="form-control" id='ddl' />
+                                        <span class="input-group-addon">
+                                            <span class="glyphicon glyphicon-calendar"></span>
+                                        </span>
+                                </div>
 
                         </div>
-                        {!! Form::submit('Обновить',array('class' => 'form-control'))!!}
+                        {!! Form::submit('Обновить',array('class' => 'form-control btn-success '))!!}
                         {!! Form::close() !!}
                         </p>
                     </div>
@@ -266,8 +277,6 @@
                         </div>
                     </div>
                 </div>
-
-
                 <!-- Modal Gallery-->
                 <div class="modal fade" id="gallery_edit" role="dialog">
                     <div class="modal-dialog">
@@ -434,6 +443,7 @@
         var z = 1;
         var cat_container = $("#cat_container");
         $('input[type=file]').bootstrapFileInput();
+        $("#cal").datetimepicker();
 
         ListPageInfo();
         AboutCompany();
@@ -441,7 +451,8 @@
         Partners();
         Gallery();
         postCatalogDesign();
-
+        Discount();
+        //Ajax отправка форм
         $('#links_form').ajaxForm(function() {
             ListPageInfo();
             alert("Информация обновлена");
@@ -454,60 +465,72 @@
             alert("Информация обновлена");
         });
         $('#add_catalog_form').ajaxForm(function() {
-            postCatalogDesign();
             $('#catalog_add_design_name').modal('hide');
+            postCatalogDesign();
             alert("Информация обновлена");
         });
         $('#remove_catalog_form').ajaxForm(function() {
-            postCatalogDesign();
             $('#catalog_remove').modal('hide');
+            postCatalogDesign();
             alert("Информация обновлена");
         });
         $('#edit_catalog_form').ajaxForm(function() {
-            postCatalogDesign();
             $('#catalog_edit').modal('hide');
+            postCatalogDesign();
             alert("Информация обновлена");
         });
         $('#edit_category_form').ajaxForm(function() {
-            ListFinishedDesign();
             $('#catalog_edit_design_name').modal('hide');
+            ListFinishedDesign();
             alert("Информация обновлена");
         });
         $('#edit_gallery').ajaxForm(function() {
-            Gallery();
             $('#gallery_edit').modal('hide');
+            Gallery();
             alert("Информация обновлена");
         });
         $('#remove_gallery').ajaxForm(function() {
-            Gallery();
             $('#gallery_remove').modal('hide');
+            Gallery();
             alert("Информация обновлена");
         });
         $('#add_gallery').ajaxForm(function() {
-            Gallery();
             $('#gallery_add_pic').modal('hide');
+            Gallery();
             alert("Информация обновлена");
         });
         $('#add_partner').ajaxForm(function() {
-            Partners();
             $('#partner_add').modal('hide');
+            Partners();
             alert("Информация обновлена");
         });
         $('#edit_partner').ajaxForm(function() {
-            Partners();
             $('#partner_edit').modal('hide');
+            Partners();
             alert("Информация обновлена");
         });
         $('#remove_partner').ajaxForm(function() {
-            Partners();
             $('#partner_remove').modal('hide');
+            Partners();
             alert("Информация обновлена");
         });
-
-
-
-
-        //Загрузка страницы
+        $('#discount_form').ajaxForm(function() {
+            alert("Информация обновлена");
+        });
+        //Загрузка данных
+        function Discount(){
+            $.ajax({
+                type: "POST",
+                url: "{{ action('AdminController@postListDiscount') }}",
+                data: {_token: CSRF_TOKEN},
+                dataType: 'JSON',
+                success: function (data) {
+                    $("#dh1").val(data[0]['h1']);
+                    $("#dh2").val(data[0]['h2']);
+                    $("#ddl").val(data[0]['DeadLine']);
+                }
+            });
+        }
         function AboutCompany() {
             $.ajax({
                 type: "POST",

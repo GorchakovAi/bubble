@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Discount;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
@@ -19,11 +20,14 @@ use App\Http\Requests\AddDesignRequest;
 use App\Http\Requests\UploadImgRequest;
 use App\Http\Requests\UpdatePageInfoRequest;
 use App\Http\Requests\UpdateAboutCompanyRequest;
+use App\Http\Requests\AddDiscountRequest;
 
+
+use Gorchaqw\Test\Example;
 use Symfony\Component\Console\Input;
 
-use Faker\Provider\Image;
-use Illuminate\Support\Facades\DB;
+
+
 
 
 class AdminController extends Controller
@@ -70,9 +74,15 @@ class AdminController extends Controller
     }
 
     // Акции
-    public function postUpdateDiscount()
+    public function postUpdateDiscount(AddDiscountRequest $request)
     {
-        return "123";
+        Discount::where('id', '=', 1)->update(['h1' => $request['h1']]);
+        Discount::where('id', '=', 1)->update(['h2' => $request['h2']]);
+        Discount::where('id', '=', 1)->update(['DeadLine' => $request['DeadLine']]);
+        return "ok";
+    }
+    public function postListDiscount(){
+        return Discount::select('h1','h2','DeadLine')->get();
     }
 
     // Готовые оформления

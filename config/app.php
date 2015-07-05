@@ -113,7 +113,7 @@ return [
         /*
          * Laravel Framework Service Providers...
          */
-        'Collective\Html\HtmlServiceProvider',
+        Collective\Html\HtmlServiceProvider::class,
         Illuminate\Foundation\Providers\ArtisanServiceProvider::class,
         Illuminate\Auth\AuthServiceProvider::class,
         Illuminate\Broadcasting\BroadcastServiceProvider::class,

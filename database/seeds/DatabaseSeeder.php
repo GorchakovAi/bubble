@@ -9,6 +9,7 @@ use App\CatalogDesign;
 use App\PageInfo;
 use App\Gallery;
 use App\Partners;
+use App\Discount;
 
 use Illuminate\Support\Facades\DB;
 
@@ -30,9 +31,18 @@ class DatabaseSeeder extends Seeder
         $this->call('AboutCompanySeeder');
         $this->call('GalleriesSeeder');
         $this->call('PartnersSeeder');
-
+        $this->call('DiscountSeeder');
 
         Model::reguard();
+    }
+}
+
+Class DiscountSeeder extends  Seeder{
+    public function run()
+    {
+        DB::table('discounts')->delete();
+        Discount::create(array('h1'=>'Заголовок 1','h2'=>'Заголовок 2','DeadLine'=> date("H:i Y-m-d",mktime(date("H"), date("i"),0, date("m")  , date("d"), date("Y")+1))));
+
     }
 }
 

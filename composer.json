@@ -9,7 +9,8 @@
         "laravel/framework": "5.1.*",
         "laravelcollective/html": "~5.0",
         "intervention/image": "^2.2",
-        "twbs/bootstrap": "^3.3"
+        "twbs/bootstrap": "^3.3",
+        "franzl/studio": "^0.9.5"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
