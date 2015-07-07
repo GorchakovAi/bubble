@@ -37,6 +37,10 @@ class AdminController extends Controller
      *
      * @return Response
      */
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
     public function getIndex()
     {
         return view('admin');
